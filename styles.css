@@ -124,6 +124,7 @@ header h2, header h1 {
 #muni {
     border-radius: 20px;
     margin: 40px auto;
+    width: 300px;
 }
 .projects {
     display: flex;
