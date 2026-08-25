@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NearMe — Trust the Pin | UX Case Study</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f3f1e9;
+        --paper-raised: #faf8f2;
+        --ink: #232520;
+        --ink-soft: #5b5a4f;
+        --line: #cfc9b6;
+        --verified: #2f6f5e;
+        --verified-soft: #e4eee9;
+        --stale: #b23a2e;
+        --stale-soft: #f5e4e1;
+        --mark: #d9a441;
+        --max: 820px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgba(35, 37, 32, 0.035) 1px,
+          transparent 0
+        );
+        background-size: 22px 22px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      a {
+        color: var(--verified);
+      }
+      .wrap {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 0 28px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* NAV */
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 0;
+        border-bottom: 1px solid var(--line);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12.5px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .nav a {
+        color: var(--ink);
+        text-decoration: none;
+        border-bottom: 1px solid var(--ink);
+      }
+      .nav a:hover {
+        color: var(--verified);
+        border-color: var(--verified);
+      }
+
+      /* HERO */
+      .hero {
+        padding: 64px 0 40px;
+        position: relative;
+      }
+      .eyebrow {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--verified);
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .eyebrow .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--verified);
+        display: inline-block;
+      }
+      h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: clamp(40px, 7vw, 64px);
+        line-height: 1.03;
+        margin: 0 0 20px;
+        letter-spacing: -0.01em;
+      }
+      h1 em {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--verified);
+      }
+      .subtitle {
+        font-size: 19px;
+        color: var(--ink-soft);
+        max-width: 560px;
+        margin: 0 0 36px;
+      }
+      .stamp {
+        position: absolute;
+        top: 56px;
+        right: 0;
+        width: 112px;
+        height: 112px;
+        border-radius: 50%;
+        border: 2px solid var(--stale);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(9deg);
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--stale);
+        text-align: center;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1.5;
+        font-weight: 500;
+      }
+      .stamp span {
+        display: block;
+      }
+      .stamp .big {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+
+      /* SNAPSHOT BAR */
+      .snapshot {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        margin-bottom: 64px;
+      }
+      .snap-cell {
+        background: var(--paper-raised);
+        padding: 18px 16px;
+      }
+      .snap-cell .label {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+      }
+      .snap-cell .val {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      /* SECTIONS */
+      section {
+        padding: 56px 0;
+        border-top: 1px solid var(--line);
+        position: relative;
+      }
+      .marginalia {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-soft);
+        margin-bottom: 22px;
+      }
+      h2 {
+        font-family: "Fraunces", serif;
+        font-weight: 500;
+        font-size: clamp(26px, 4vw, 34px);
+        margin: 0 0 22px;
+        letter-spacing: -0.01em;
+      }
+      p {
+        color: var(--ink);
+        max-width: 640px;
+      }
+      .lede {
+        font-size: 17.5px;
+        color: var(--ink-soft);
+        max-width: 640px;
+      }
+
+      /* PROBLEM */
+      .problem-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-top: 24px;
+      }
+      @media (min-width: 640px) {
+        .problem-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .problem-card {
+        background: var(--paper-raised);
+        border: 1px solid var(--line);
+        padding: 20px 22px;
+      }
+      .problem-card .k {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        color: var(--stale);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+      }
+      .problem-card p {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      /* PERSONA */
+      .persona-card {
+        background: var(--paper-raised);
+        border: 1px solid var(--line);
+        padding: 32px;
+        margin-top: 24px;
+      }
+      .persona-top {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--verified);
+        color: var(--paper-raised);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .persona-name {
+        font-family: "Fraunces", serif;
+        font-size: 22px;
+        font-weight: 600;
+      }
+      .persona-meta {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        color: var(--ink-soft);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .persona-bio {
+        font-size: 15.5px;
+        margin-bottom: 26px;
+      }
+      .nb-cols {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+      @media (min-width: 640px) {
+        .nb-cols {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .nb-title {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--verified);
+        margin-bottom: 10px;
+      }
+      ul.nb-list {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 14.5px;
+      }
+      ul.nb-list li {
+        margin-bottom: 9px;
+        color: var(--ink);
+      }
+
+      /* RESEARCH QUESTIONS */
+      .rq-list {
+        list-style: none;
+        margin: 22px 0 0;
+        padding: 0;
+        max-width: 640px;
+      }
+      .rq-list li {
+        display: flex;
+        gap: 14px;
+        padding: 16px 0;
+        border-bottom: 1px dashed var(--line);
+        font-size: 15.5px;
+      }
+      .rq-list li:first-child {
+        border-top: 1px dashed var(--line);
+      }
+      .rq-num {
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--verified);
+        flex-shrink: 0;
+        font-size: 14px;
+      }
+
+      /* PROBE KIT */
+      .probe-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-top: 26px;
+      }
+      @media (min-width: 640px) {
+        .probe-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .probe-card {
+        border: 1px solid var(--line);
+        background: var(--paper-raised);
+        padding: 20px;
+        position: relative;
+      }
+      .probe-card::before {
+        content: attr(data-tag);
+        position: absolute;
+        top: -10px;
+        left: 18px;
+        background: var(--mark);
+        color: var(--ink);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 3px 8px;
+        font-weight: 600;
+      }
+      .probe-card h3 {
+        font-family: "Fraunces", serif;
+        font-size: 17px;
+        font-weight: 600;
+        margin: 10px 0 8px;
+      }
+      .probe-card p {
+        font-size: 14px;
+        margin: 0;
+        color: var(--ink-soft);
+      }
+
+      /* SCENARIO */
+      .scenario-quote {
+        font-family: "Fraunces", serif;
+        font-style: italic;
+        font-size: 20px;
+        line-height: 1.5;
+        color: var(--ink);
+        max-width: 640px;
+        margin: 0 0 30px;
+        padding-left: 20px;
+        border-left: 3px solid var(--mark);
+      }
+      .steps {
+        list-style: none;
+        margin: 0 0 34px;
+        padding: 0;
+        max-width: 640px;
+        counter-reset: step;
+      }
+      .steps li {
+        counter-increment: step;
+        padding: 12px 0 12px 40px;
+        position: relative;
+        font-size: 15px;
+        border-bottom: 1px solid var(--line);
+      }
+      .steps li:before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 11px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        color: var(--paper-raised);
+        background: var(--verified);
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .verified-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--verified-soft);
+        color: var(--verified);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12.5px;
+        padding: 6px 12px;
+        border-radius: 100px;
+        margin: 6px 0 26px;
+      }
+      .verified-chip .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--verified);
+      }
+      .commentary {
+        background: var(--paper-raised);
+        border: 1px solid var(--line);
+        padding: 22px 24px;
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        max-width: 640px;
+      }
+      .commentary .k {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--verified);
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      /* DIRECTION */
+      .direction-list {
+        list-style: none;
+        margin: 22px 0 30px;
+        padding: 0;
+        max-width: 640px;
+      }
+      .direction-list li {
+        display: flex;
+        gap: 12px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 15.5px;
+      }
+      .direction-list li:before {
+        content: "→";
+        color: var(--verified);
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+      .next-steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .next-chip {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        padding: 7px 13px;
+        border: 1px solid var(--line);
+        border-radius: 100px;
+        color: var(--ink-soft);
+      }
+      .next-chip.active {
+        border-color: var(--verified);
+        color: var(--verified);
+        background: var(--verified-soft);
+      }
+
+      /* FOOTER */
+      footer {
+        padding: 48px 0 60px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+      }
+      footer .fnote {
+        font-size: 14px;
+        color: var(--ink-soft);
+        max-width: 400px;
+      }
+      .footer-links {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        color: var(--ink);
+        border-bottom: 1px solid var(--ink);
+        padding-bottom: 2px;
+      }
+      .footer-links a:hover {
+        color: var(--verified);
+        border-color: var(--verified);
+      }
+
+      @media (max-width: 640px) {
+        .stamp {
+          position: static;
+          margin: 24px 0 0;
+          transform: rotate(-4deg);
+        }
+        .snapshot {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="nav">
+        <span>Munira Ajumobi</span>
+        <a href="https://mun-eerah.github.io/portfolio-website/"
+          >← Back to portfolio</a
+        >
+      </nav>
+
+      <div class="hero">
+        <div class="eyebrow">
+          <span class="dot"></span>UX Case Study · Research Phase
+        </div>
+        <h1>NearMe — <em>trust</em><br />the pin.</h1>
+        <p class="subtitle">
+          A concept for confirming a business is actually still there — before
+          someone spends their only errand window finding out it isn't.
+        </p>
+        <div class="stamp">
+          <span class="big">In Progress</span><span>research phase</span
+          ><span>last updated 2026</span>
+        </div>
+      </div>
+
+      <div class="snapshot">
+        <div class="snap-cell">
+          <div class="label">Type</div>
+          <div class="val">Independent study</div>
+        </div>
+        <div class="snap-cell">
+          <div class="label">Focus</div>
+          <div class="val">Location trust</div>
+        </div>
+        <div class="snap-cell">
+          <div class="label">Phase</div>
+          <div class="val">Research → IA</div>
+        </div>
+        <div class="snap-cell">
+          <div class="label">Method</div>
+          <div class="val">Persona, probes</div>
+        </div>
+      </div>
+
+      <section id="problem">
+        <div class="marginalia">01 — The Problem</div>
+        <h2>Maps doesn't know when a place has actually changed.</h2>
+        <p class="lede">
+          People search for a business, follow the directions, and arrive to
+          find it closed, relocated, or replaced — sometimes months after the
+          fact. NearMe doesn't try to solve discovery broadly. It focuses on one
+          narrow thing: trust in whether a listing still reflects reality.
+        </p>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="k">What happens</div>
+            <p>
+              A listing looks current but isn't. The user has no way to tell —
+              until they've already made the trip.
+            </p>
+          </div>
+          <div class="problem-card">
+            <div class="k">Who it costs most</div>
+            <p>
+              Errand-driven, time-pressured users who don't have spare minutes
+              to verify a listing before they leave.
+            </p>
+          </div>
+          <div class="problem-card">
+            <div class="k">Where trust breaks</div>
+            <p>
+              Repeated bad experiences quietly erode confidence in Maps
+              specifically — even as the person keeps using it.
+            </p>
+          </div>
+          <div class="problem-card">
+            <div class="k">What's missing</div>
+            <p>
+              A visible signal of currency, and a fast way for the person who
+              discovers the change to fix it for the next user.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="persona">
+        <div class="marginalia">02 — Primary Persona</div>
+        <h2>Adaeze Okonkwo, 34</h2>
+        <div class="persona-card">
+          <div class="persona-top">
+            <div class="avatar">AO</div>
+            <div>
+              <div class="persona-name">Adaeze Okonkwo</div>
+              <div class="persona-meta">Operations Coordinator · Lagos</div>
+            </div>
+          </div>
+          <p class="persona-bio">
+            Splits her day between the office and errands — picking up
+            prescriptions for her father, stopping at ATMs between meetings,
+            occasionally scouting clinics or service providers for family. Not
+            tech-illiterate, just impatient with anything that wastes her
+            limited errand-time. Defaults to Google Maps because it's fast and
+            familiar — and has been burned enough times by outdated listings
+            that a small part of her braces for it every time she heads out on a
+            pin.
+          </p>
+          <div class="nb-cols">
+            <div>
+              <div class="nb-title">Needs</div>
+              <ul class="nb-list">
+                <li>
+                  Confidence, before she leaves, that a business is still at the
+                  listed location
+                </li>
+                <li>
+                  A signal of how current the info is — not just a static
+                  listing
+                </li>
+                <li>A fast way to flag a closed/moved business herself</li>
+                <li>All of this to cost seconds, not minutes</li>
+              </ul>
+            </div>
+            <div>
+              <div class="nb-title">Behaviors</div>
+              <ul class="nb-list">
+                <li>
+                  Searches mid-errand, on the move, with partial attention
+                </li>
+                <li>Takes the top result at face value</li>
+                <li>
+                  Has started quietly hedging — calling ahead, buffer time
+                </li>
+                <li>Vents to coworkers after a wasted trip</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="research">
+        <div class="marginalia">03 — Research Plan</div>
+        <h2>Three questions, one cultural probe kit.</h2>
+        <p class="lede">
+          Designed to capture in-the-moment attitudes rather than
+          recalled-after-the-fact ones.
+        </p>
+        <ol class="rq-list">
+          <li>
+            <span class="rq-num">Q1</span> What goes through your mind in the
+            moments right before you leave to visit a business you found on
+            Maps?
+          </li>
+          <li>
+            <span class="rq-num">Q2</span> How do you currently decide whether a
+            listing is trustworthy or "up to date" enough to act on?
+          </li>
+          <li>
+            <span class="rq-num">Q3</span> When a listed business turns out to
+            be gone, what do you do next — and how does it change how you use
+            Maps afterward?
+          </li>
+        </ol>
+        <div class="probe-grid">
+          <div class="probe-card" data-tag="3–5 days">
+            <h3>Maps Diary</h3>
+            <p>
+              A short booklet logging what participants searched for, how
+              confident they felt, and what actually happened on arrival.
+            </p>
+          </div>
+          <div class="probe-card" data-tag="open-ended">
+            <h3>Photo Task</h3>
+            <p>
+              "Take a photo any time a place doesn't match what you expected."
+              Left open on purpose — lets people define "didn't match"
+              themselves.
+            </p>
+          </div>
+          <div class="probe-card" data-tag="mail-back">
+            <h3>Postcard Prompts</h3>
+            <p>
+              Half-finished sentences to complete: "The last time Maps let me
+              down, I felt…" / "I'd trust a listing more if…"
+            </p>
+          </div>
+          <div class="probe-card" data-tag="reaction">
+            <h3>Trigger Object</h3>
+            <p>
+              A mock listing card, shown with: "Would you trust this today? Why
+              or why not?" — a reaction to something concrete, not abstract
+              recall.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="scenario">
+        <div class="marginalia">04 — Use Scenario</div>
+        <h2>Adaeze and the prescription run.</h2>
+        <p class="scenario-quote">
+          "She isn't motivated by curiosity or thoroughness — she's motivated by
+          not wanting to fail her father, and not wanting to explain to her
+          manager why a twenty-minute errand took an hour."
+        </p>
+        <ol class="steps">
+          <li>Opens Google Maps on her phone as she's heading out</li>
+          <li>
+            Searches for the pharmacy where she usually gets her father's
+            prescription
+          </li>
+          <li>Taps her preferred/nearest match from the results</li>
+          <li>
+            Scans the listing quickly, looking for a signal of how current it is
+          </li>
+          <li>Sees a currency signal on the listing</li>
+          <li>Reassured, heads straight out — no hesitation, no backup plan</li>
+        </ol>
+        <div class="verified-chip">
+          <span class="dot"></span>location verified 1 day ago
+        </div>
+        <div class="commentary">
+          <span class="k">Why this scenario, this narrow</span>
+          A vague goal like "wants accurate maps" doesn't reveal much. "Needs
+          medication in a 20-minute gap between meetings" reveals exactly what's
+          at stake if the solution fails. It also confirms Adaeze scans, she
+          doesn't dig — which means any confidence signal has to be legible in a
+          glance, not something she has to seek out or interpret.
+        </div>
+      </section>
+
+      <section id="direction">
+        <div class="marginalia">05 — Where This Is Headed</div>
+        <h2>A trust-signal system, not a redesign.</h2>
+        <ul class="direction-list">
+          <li>A visible "last verified" timestamp on every listing</li>
+          <li>
+            A low-friction, crowdsourced flag/confirm flow — the person who
+            discovers a closure fixes it for everyone after them
+          </li>
+          <li>
+            Benchmarking against how Waze and delivery apps handle real-time "is
+            this still here/open" signals
+          </li>
+        </ul>
+        <div class="nb-title" style="margin-bottom: 10px">Next steps</div>
+        <div class="next-steps">
+          <span class="next-chip active">Research ✓</span>
+          <span class="next-chip">Information architecture</span>
+          <span class="next-chip">Low-fi wireframes</span>
+          <span class="next-chip">Usability testing</span>
+        </div>
+      </section>
+
+      <footer>
+        <p class="fnote">
+          Coursework: Human-Computer Interaction — The Foundations of UX Design,
+          Interaction Design Foundation. This case study is a working document
+          and will be updated as the project moves into design.
+        </p>
+        <div class="footer-links">
+          <!-- <a href="https://www.figma.com/board/r3CwV1dgKIPD7LeLf8KQrc/FigJam-Board-for-%22NearMe%22">FigJam Board</a> -->
+          <a href="https://mun-eerah.github.io/portfolio-website/">Portfolio</a>
+          <a href="https://github.com/Mun-eerah">GitHub</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
